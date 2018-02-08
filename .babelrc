@@ -1,5 +1,17 @@
 {
-  plugins: [
-    ["transform-react-jsx", { "pragma": "h" }]
-  ]
+  "env": {
+    "test": {
+      "plugins": [
+        ["@babel/plugin-transform-react-jsx", { "pragma": "h" }]
+      ],
+      "presets": [
+        "@ava/babel-preset-stage-4"
+      ]
+    },
+    "development": {
+      "plugins": [
+        ["@babel/plugin-transform-react-jsx", { "pragma": "h" }]
+      ]
+    }
+  }
 }

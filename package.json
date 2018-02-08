@@ -6,17 +6,34 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "babel-core": "6.26.0",
-    "babel-loader": "7.1.2",
-    "babel-plugin-transform-react-jsx": "6.22",
-    "babel-preset-env": "1.6.1",
     "hyperapp": "^1.1.0"
   },
   "devDependencies": {
+    "@ava/babel-preset-stage-4": "^1.1.0",
+    "@babel/core": "^7.0.0-beta.39",
+    "@babel/plugin-transform-react-jsx": "^7.0.0-beta.39",
+    "@babel/preset-env": "^7.0.0-beta.39",
+    "@babel/register": "^7.0.0-beta.39",
+    "ava": "^0.25.0",
+    "babel-loader": "^8.0.0-beta.0",
+    "jsdom": "^11.6.2",
+    "undom": "^0.3.3",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.4"
   },
   "scripts": {
-    "start": "webpack-dev-server --config ./webpack.config.js"
+    "start": "NODE_ENV=development webpack-dev-server --config ./webpack.config.js",
+    "test": "NODE_ENV=test ava"
+  },
+  "ava": {
+    "files": [
+      "src/**/*.test.js"
+    ],
+    "source": [
+      "src/**/*.js"
+    ],
+    "require": [
+      "@babel/register"
+    ]
   }
 }
