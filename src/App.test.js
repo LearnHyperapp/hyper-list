@@ -37,6 +37,16 @@ test('can add an item', ava => {
   ava.deepEqual(state.items, ['first']);
 });
 
+test('can add 3 empty items', ava => {
+  const state = runActions([
+    actions.addItem(''),
+    actions.addItem(''),
+    actions.addItem(''),
+  ])(initialState, actions);
+
+  ava.deepEqual(state.items, ['', '', '']);
+})
+
 test('can update text', ava => {
   ava.is(initialState.text, '');
 
