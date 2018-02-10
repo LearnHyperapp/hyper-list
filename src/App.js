@@ -61,5 +61,5 @@ export const view = (state, actions) => {
         </li>
       </ul>
     </div>
-  )
+  );
 }

@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "hyperapp": "^1.1.0"
+    "hyperapp": "^1.1.2"
   },
   "devDependencies": {
     "@ava/babel-preset-stage-4": "^1.1.0",
