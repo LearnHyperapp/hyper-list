@@ -13,7 +13,7 @@ test('initial view matches snapshot', ava => {
 
 test('view with item matches snapshot', ava => {
   const state = runActions([
-    actions.addItem('first'),
+    actions.addItem({ value: 'first' }),
   ])(initialState, actions);
 
   ava.snapshot(view(state, actions));
@@ -21,7 +21,7 @@ test('view with item matches snapshot', ava => {
 
 test('view with text matches snapshot', ava => {
   const state = runActions([
-    actions.setText('first'),
+    actions.setText({ value: 'first' }),
   ])(initialState, actions);
 
   ava.snapshot(view(state, actions));
@@ -31,7 +31,8 @@ test('can add an item', ava => {
   ava.deepEqual(initialState.items, []);
 
   const state = runActions([
-    actions.addItem('first'),
+    actions.setText({ value: 'first' }),
+    actions.addItem(),
   ])(initialState, actions);
 
   ava.deepEqual(state.items, ['first']);
@@ -39,9 +40,9 @@ test('can add an item', ava => {
 
 test('can add 3 empty items', ava => {
   const state = runActions([
-    actions.addItem(''),
-    actions.addItem(''),
-    actions.addItem(''),
+    actions.addItem(),
+    actions.addItem(),
+    actions.addItem(),
   ])(initialState, actions);
 
   ava.deepEqual(state.items, ['', '', '']);
@@ -51,7 +52,7 @@ test('can update text', ava => {
   ava.is(initialState.text, '');
 
   const state = runActions([
-    actions.setText('first'),
+    actions.setText({ value: 'first' }),
   ])(initialState, actions);
 
   ava.is(state.text, 'first');
@@ -59,9 +60,14 @@ test('can update text', ava => {
 
 test('can remove an item', ava => {
   let state = runActions([
-    actions.addItem('first'),
-    actions.addItem('second'),
-    actions.addItem('third'),
+    actions.setText({ value: 'first' }),
+    actions.addItem(),
+
+    actions.setText({ value: 'second' }),
+    actions.addItem(),
+
+    actions.setText({ value: 'third' }),
+    actions.addItem(),
   ])(initialState, actions);
 
   ava.deepEqual(state.items, ['first', 'second', 'third']);
