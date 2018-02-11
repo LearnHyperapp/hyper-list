@@ -27,9 +27,15 @@ export const actions = {
     localStorage.setItem(storageKey, JSON.stringify(state.items));
   },
 
-  load: () => state => ({
-    items: JSON.parse(localStorage.getItem(storageKey)),
-  }),
+  load: () => state => {
+    const fromStorage = localStorage.getItem(storageKey);
+
+    return {
+      items: fromStorage
+        ? JSON.parse(fromStorage)
+        : state.items,
+    };
+  },
 }
 
 export const view = (state, actions) => {
