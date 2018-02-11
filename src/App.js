@@ -1,5 +1,7 @@
 import { h } from 'hyperapp'
 
+const storageKey = 'list';
+
 export const initialState = {
   items: [], // Will be a list of strings, each an item on the list
   text: '', // Will be our memo of what text is in the input. May not actually be necessary, as we could allow the input to be *uncontrolled*.
@@ -20,6 +22,14 @@ export const actions = {
       .slice(0, index) // Get all the items in the list before the index we're removing
       .concat(state.items.slice(index + 1)) // Get all the items in the list after the index we're removing
   }),
+
+  save: () => state => {
+    localStorage.setItem(storageKey, JSON.stringify(state.items));
+  },
+
+  load: () => state => ({
+    items: JSON.parse(localStorage.getItem(storageKey)),
+  }),
 }
 
 export const view = (state, actions) => {
@@ -29,37 +39,55 @@ export const view = (state, actions) => {
    *  - I'm also keying the <li> wrapping our input at the bottom to guarantee that hyperapp doesn't create a new dom element.
    */
   return (
-    <ul>
-      {state.items.map((item, idx) => (
-        <li key={idx}>
-          <a
-            href="#"
-            onclick={(e) => {
-              e.preventDefault()
-              actions.remItem(idx)
+    <div>
+      <button
+        onclick={(e) => {
+          e.preventDefault();
+          actions.save();
+        }}
+      >
+        Save
+      </button>
+      <button
+        onclick={(e) => {
+          e.preventDefault();
+          actions.load();
+        }}
+      >
+        Load
+      </button>
+      <ul>
+        {state.items.map((item, idx) => (
+          <li key={idx}>
+            <a
+              href="#"
+              onclick={(e) => {
+                e.preventDefault()
+                actions.remItem(idx)
+              }}
+            >
+              &times;
+            </a>
+
+            &nbsp;
+
+            {item}
+          </li>
+        ))}
+        <li key="text">
+          <input
+            type="text"
+            value={state.text}
+            oninput={(e) => actions.setText(e.target.value)}
+            onkeydown={(e) => {
+              if (e.which === 13) { // 13 is the enter/return key
+                e.preventDefault() // If we were in a form, we'd definitely need to call this to prevent a form submit. I think it's just a generally good idea for keyDown handling for enter in inputs.
+                actions.addItem(state.text) // Could also swap state.text with e.target.value if we had an uncontrolled input.
+              }
             }}
-          >
-            &times;
-          </a>
-
-          &nbsp;
-
-          {item}
+          />
         </li>
-      ))}
-      <li key="text">
-        <input
-          type="text"
-          value={state.text}
-          oninput={(e) => actions.setText(e.target.value)}
-          onkeydown={(e) => {
-            if (e.which === 13) { // 13 is the enter/return key
-              e.preventDefault() // If we were in a form, we'd definitely need to call this to prevent a form submit. I think it's just a generally good idea for keyDown handling for enter in inputs.
-              actions.addItem(state.text) // Could also swap state.text with e.target.value if we had an uncontrolled input.
-            }
-          }}
-        />
-      </li>
-    </ul>
+      </ul>
+    </div>
   );
 }
