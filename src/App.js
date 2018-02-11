@@ -1,21 +1,38 @@
 import { h } from 'hyperapp'
 
+const storageKey = 'list';
+
+const initialItems = () => {
+  const fromStorage = localStorage.getItem(storageKey)
+  return fromStorage
+    ? JSON.parse(fromStorage)
+    : []
+}
+
 export const initialState = {
-  items: [], // Will be a list of strings, each an item on the list
+  items: initialItems(), // Will be a list of strings, each an item on the list
   text: '', // Will be our memo of what text is in the input. May not actually be necessary, as we could allow the input to be *uncontrolled*.
 }
 
+const saveToStorage = stateUpdate => {
+  if (stateUpdate.items) {
+    localStorage.setItem(storageKey, JSON.stringify(stateUpdate.items));
+  }
+
+  return stateUpdate;
+}
+
 export const actions = {
-  addItem: item => state => ({
+  addItem: item => state => saveToStorage({
     text: '', // Clear our input box
     items: state.items.concat(item), // Add the item (also should be the same as state.text) to our items list
   }),
 
-  setText: value => state => ({
+  setText: value => state => saveToStorage({
     text: value, // Update our text to `value`, which should be coming from oninput event.target.value (see line 46)
   }),
 
-  remItem: index => state => ({
+  remItem: index => state => saveToStorage({
     items: state.items
       .slice(0, index) // Get all the items in the list before the index we're removing
       .concat(state.items.slice(index + 1)) // Get all the items in the list after the index we're removing
