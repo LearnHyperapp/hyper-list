@@ -1,9 +1,12 @@
 import { h } from 'hyperapp'
 
 const storageKey = 'list';
+const storage = typeof localStorage !== 'undefined'
+  ? localStorage
+  : { getItem: () => null, setItem: () => {} };
 
 const initialItems = () => {
-  const fromStorage = localStorage.getItem(storageKey)
+  const fromStorage = storage.getItem(storageKey)
   return fromStorage
     ? JSON.parse(fromStorage)
     : []
@@ -16,7 +19,7 @@ export const initialState = {
 
 const saveToStorage = stateUpdate => {
   if (stateUpdate.items) {
-    localStorage.setItem(storageKey, JSON.stringify(stateUpdate.items));
+    storage.setItem(storageKey, JSON.stringify(stateUpdate.items));
   }
 
   return stateUpdate;
