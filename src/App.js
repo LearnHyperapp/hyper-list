@@ -1,18 +1,23 @@
 import { h } from 'hyperapp'
 
+const inputPattern = ".+";
+
 export const initialState = {
   items: [], // Will be a list of strings, each an item on the list
   text: '', // Will be our memo of what text is in the input. May not actually be necessary, as we could allow the input to be *uncontrolled*.
+  textValidationMessage: '',
 }
 
 export const actions = {
-  addItem: item => state => ({
+  addItem: () => state => ({
     text: '', // Clear our input box
-    items: state.items.concat(item), // Add the item (also should be the same as state.text) to our items list
+    textValidationMessage: '',
+    items: state.items.concat(state.text), // Add the item (also should be the same as state.text) to our items list
   }),
 
-  setText: value => state => ({
-    text: value, // Update our text to `value`, which should be coming from oninput event.target.value (see line 46)
+  setText: input => state => ({
+    text: input.value, // Update our text to `value`, which should be coming from oninput event.target.value (see line 46)
+    textValidationMessage: input.validationMessage,
   }),
 
   remItem: index => state => ({
@@ -29,37 +34,51 @@ export const view = (state, actions) => {
    *  - I'm also keying the <li> wrapping our input at the bottom to guarantee that hyperapp doesn't create a new dom element.
    */
   return (
-    <ul>
-      {state.items.map((item, idx) => (
-        <li key={idx}>
-          <a
-            href="#"
-            onclick={(e) => {
-              e.preventDefault()
-              actions.remItem(idx)
-            }}
-          >
-            &times;
-          </a>
+    <form
+      action="#"
+      method="GET"
+      onsubmit={(e) => {
+        e.preventDefault();
+        actions.addItem();
+      }}
+    >
+      <ul>
+        {state.items.map((item, idx) => (
+          <li key={idx}>
+            <a
+              href="#"
+              onclick={(e) => {
+                e.preventDefault()
+                actions.remItem(idx)
+              }}
+            >
+              &times;
+            </a>
 
-          &nbsp;
+            &nbsp;
 
-          {item}
+            {item}
+          </li>
+        ))}
+        <li key="text">
+          <div>
+            <label for="text">Add an item:</label><br />
+            <input
+              id="text"
+              type="text"
+              value={state.text}
+              oninput={(e) => actions.setText(e.target)}
+              pattern={inputPattern}
+              required
+
+              oncreate={(input) => actions.setText(input)}
+            />
+            <br />
+            <small>{state.textValidationMessage ? state.textValidationMessage : `Input should match /${inputPattern}/`}</small>
+
+          </div>
         </li>
-      ))}
-      <li key="text">
-        <input
-          type="text"
-          value={state.text}
-          oninput={(e) => actions.setText(e.target.value)}
-          onkeydown={(e) => {
-            if (e.which === 13) { // 13 is the enter/return key
-              e.preventDefault() // If we were in a form, we'd definitely need to call this to prevent a form submit. I think it's just a generally good idea for keyDown handling for enter in inputs.
-              actions.addItem(state.text) // Could also swap state.text with e.target.value if we had an uncontrolled input.
-            }
-          }}
-        />
-      </li>
-    </ul>
+      </ul>
+    </form>
   );
 }
