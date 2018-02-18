@@ -7,13 +7,20 @@ const runActions = transforms => (state, actions) =>
     return Object.assign({}, nextState, modifier);
   }, state);
 
+const setTextAndAddItem = text => (state, actions) => (
+  runActions([
+    actions.setText(text),
+    actions.addItem(),
+  ])(state, actions)
+);
+
 test('initial view matches snapshot', ava => {
   ava.snapshot(view(initialState, actions));
 });
 
 test('view with item matches snapshot', ava => {
   const state = runActions([
-    actions.addItem('first'),
+    setTextAndAddItem('first'),
   ])(initialState, actions);
 
   ava.snapshot(view(state, actions));
@@ -27,29 +34,39 @@ test('view with text matches snapshot', ava => {
   ava.snapshot(view(state, actions));
 });
 
-test('can add an item', ava => {
-  ava.deepEqual(initialState.items, []);
+test('initial state matches snapshot', ava => {
+  ava.snapshot(initialState);
+})
 
+test('can add an item', ava => {
   const state = runActions([
-    actions.addItem('first'),
+    setTextAndAddItem('first'),
   ])(initialState, actions);
 
   ava.deepEqual(state.items, ['first']);
 });
 
-test('can add 3 empty items', ava => {
+test('cannot add empty items', ava => {
   const state = runActions([
-    actions.addItem(''),
-    actions.addItem(''),
-    actions.addItem(''),
+    setTextAndAddItem(''),
+    setTextAndAddItem('foo'),
+    setTextAndAddItem('bar'),
   ])(initialState, actions);
 
-  ava.deepEqual(state.items, ['', '', '']);
+  ava.deepEqual(state.items, ['foo', 'bar']);
+});
+
+test('cannot add items with only whitespace', ava => {
+  const state = runActions([
+    setTextAndAddItem('           '),
+    setTextAndAddItem("\t"),
+    setTextAndAddItem("\r\n"),
+  ])(initialState, actions);
+
+  ava.deepEqual(state.items, []);
 })
 
 test('can update text', ava => {
-  ava.is(initialState.text, '');
-
   const state = runActions([
     actions.setText('first'),
   ])(initialState, actions);
@@ -59,9 +76,9 @@ test('can update text', ava => {
 
 test('can remove an item', ava => {
   let state = runActions([
-    actions.addItem('first'),
-    actions.addItem('second'),
-    actions.addItem('third'),
+    setTextAndAddItem('first'),
+    setTextAndAddItem('second'),
+    setTextAndAddItem('third'),
   ])(initialState, actions);
 
   ava.deepEqual(state.items, ['first', 'second', 'third']);

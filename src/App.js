@@ -6,9 +6,11 @@ export const initialState = {
 }
 
 export const actions = {
-  addItem: item => state => ({
+  addItem: () => state => ({
     text: '', // Clear our input box
-    items: state.items.concat(item), // Add the item (also should be the same as state.text) to our items list
+    items: state.text.trim()
+      ? state.items.concat(state.text)
+      : state.items, // Add the item (also should be the same as state.text) to our items list
   }),
 
   setText: value => state => ({
